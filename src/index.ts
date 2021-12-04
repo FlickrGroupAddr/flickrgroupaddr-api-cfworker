@@ -1,13 +1,14 @@
-import { handleRequest } from './handler'
+import { Router } from 'itty-router'
+import { flickrAuthGetRequestToken } from './flickr'
 
 addEventListener('fetch', (event) => {
-    let requestResponse:Response;
+    const router:any = Router()
 
-    const requestedUrl:string = event.request.url;
+    router.get( '^/api/v1/auth/flickr/request_token$', flickrAuthGetRequestToken )
 
-    if ( requestedUrl.endsWith('/api/v1/auth/flickr/request_token') )
+    // 404 for everything else
+    router.all( '*', () => new Response( 'Not Found', { status: 404 } ) )
 
-
-    
-    event.respondWith(handleRequest(event.request))
+    // attach the router handle to the event handler
+    event.respondWith( router.handle(event.request) )
 })
