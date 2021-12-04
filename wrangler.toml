@@ -6,6 +6,9 @@ workers_dev = false
 route = "api.flickrgroupaddr.com/api/v1/*"
 compatibility_date = "2021-12-04"
 
+# Environment vars
+vars = { FGA_FLICKR_OAUTH_CALLBACK_URI = "https://auth.flickrgroupaddr.com/flickr/oauth/callback" }
+
 [build]
 command = "npm install && npm run build"
 [build.upload]

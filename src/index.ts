@@ -1,5 +1,6 @@
 import { Router } from 'itty-router'
 import { flickrAuthGetRequestToken } from './flickr'
+//import jsSHA from "jssha";
 
 addEventListener('fetch', (event) => {
     const router:any = Router()
