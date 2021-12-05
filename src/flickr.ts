@@ -12,13 +12,15 @@ export async function flickrAuthGetRequestToken(request: Request): Promise<Respo
     //      is first, and _version is last. regardless of order in the request, the signature will be repeatable
     const baseStringComponents:string[] = [
         FGA_FLICKR_OAUTH_REQUEST_TOKEN_VERB,
+
         FGA_FLICKR_OAUTH_REQUEST_TOKEN_ENDPOINT_URI,
-        "oauth_callback=" + FGA_FLICKR_OAUTH_CALLBACK_URI,
-        "oauth_consumer_key=" + FGA_FLICKR_OAUTH_APP_KEY,
-        "oauth_nonce=" + oauthNonce,
-        "oauth_signature_method=" + FGA_FLICKR_OAUTH_SIGNATURE_METHOD,
-        "oauth_timestamp=" + oauthTimestamp,
-        "oauth_version=" + FGA_FLICKR_OAUTH_VERSION,
+
+        "oauth_callback=" + encodeURIComponent(FGA_FLICKR_OAUTH_CALLBACK_URI) +
+        "&oauth_consumer_key=" + FGA_FLICKR_OAUTH_APP_KEY +
+        "&oauth_nonce=" + oauthNonce +
+        "&oauth_signature_method=" + FGA_FLICKR_OAUTH_SIGNATURE_METHOD +
+        "&oauth_timestamp=" + oauthTimestamp +
+        "&oauth_version=" + FGA_FLICKR_OAUTH_VERSION,
     ];
 
     let encodedBaseString:string = "";
@@ -42,9 +44,20 @@ export async function flickrAuthGetRequestToken(request: Request): Promise<Respo
 
     const shaObj = new jsSHA( "SHA-1", "TEXT", { hmacKey: { value: requestSigningKey, format: "TEXT" }, } )
     shaObj.update( encodedBaseString )
-    const signature:string = shaObj.getHash( "HEX" )
+    const signature:string = shaObj.getHash( "B64" )
+
+    // Ready to make the request, I think?
+    const urlToRequest:string = FGA_FLICKR_OAUTH_REQUEST_TOKEN_ENDPOINT_URI + 
+        "?oauth_nonce=" + encodeURIComponent(oauthNonce) +
+        "&oauth_timestamp=" + encodeURIComponent(oauthTimestamp) + 
+        "&oauth_consumer_key=" + encodeURIComponent(FGA_FLICKR_OAUTH_APP_KEY) +
+        "&oauth_signature_method=" + encodeURIComponent(FGA_FLICKR_OAUTH_SIGNATURE_METHOD) +
+        "&oauth_version=" + encodeURIComponent(FGA_FLICKR_OAUTH_VERSION) + 
+        "&oauth_signature=" + encodeURIComponent( signature ) + 
+        "&oauth_callback=" + encodeURIComponent( FGA_FLICKR_OAUTH_CALLBACK_URI )
+
 
     return new Response("Getting Flicker request token\n\nEncoded base string: " + encodedBaseString +
-        "\n\nSigning key: " + requestSigningKey + "\n\nSignature: " + signature)
+        "\n\nSigning key: " + requestSigningKey + "\n\nSignature: " + signature + "\n\nToken request URL: " + urlToRequest)
 
 }
