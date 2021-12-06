@@ -71,7 +71,7 @@ export async function flickrGetUserAuthUrl(request: Request): Promise<Response> 
 
     const authUrlResponse:{ [id:string]: string } = {
         'flickr_user_auth_url': 
-            `https://www.flickr.com/services/oauth/access_token?oauth_token=${encodedToken}&perms=write` 
+            `https://www.flickr.com/services/oauth/authorize?oauth_token=${encodedToken}&perms=write` 
     }
 
     return new Response( JSON.stringify(authUrlResponse), 
