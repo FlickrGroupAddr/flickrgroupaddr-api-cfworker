@@ -78,10 +78,11 @@ export async function flickrGetUserAuthUrl(request: Request): Promise<Response> 
         { 
             headers: new Headers( 
                 { 
-                    'Content-Type'                  : 'application/json',
+                    'Content-Type'                          : 'application/json',
 
                     // CORS header needed
-                    'Access-Control-Allow-Origin'   : 'https://flickrgroupaddr.com',
+                    'Access-Control-Allow-Origin'           : 'https://flickrgroupaddr.com',
+                    'Access-Control-Allow-Credentials'      : 'true',
                 }
             )
         }

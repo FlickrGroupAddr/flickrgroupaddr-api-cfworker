@@ -19,8 +19,8 @@ export function validateClientAuthCredentials(request: Request): Response|null {
                 "status": 401,
                 "headers": new Headers( 
                     {
-                        'Access-Control-Allow-Origin'   : 'https://flickrgroupaddr.com',
-                        'Content-Type'                  : 'application/json',
+                        'Access-Control-Allow-Origin'       : 'https://flickrgroupaddr.com',
+                        'Content-Type'                      : 'application/json',
                     }
                 ),
             }
