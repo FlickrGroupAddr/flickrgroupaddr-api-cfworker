@@ -1,6 +1,6 @@
 import jsSHA from "jssha";
 
-export async function flickrAuthGetRequestToken(request: Request): Promise<Response> {
+export async function flickrGetUserAuthUrl(request: Request): Promise<Response> {
     const oauthTimestamp:number = Math.round((new Date()).getTime() / 1000.0);
 
     let integerArray:Uint32Array = new Uint32Array(1)
@@ -39,9 +39,6 @@ export async function flickrAuthGetRequestToken(request: Request): Promise<Respo
     //      followed by an ampsersand
     const requestSigningKey = encodeURIComponent(FGA_FLICKR_OAUTH_APP_SECRET) + "&"
     
-    //let shaObj = new jsSHA( encodedBaseString, "TEXT" )
-    //const signature:string = shaObj.getHMAC( requestSigningKey, "TEXT", "SHA-1", "B64" )
-
     const shaObj = new jsSHA( "SHA-1", "TEXT", { hmacKey: { value: requestSigningKey, format: "TEXT" }, } )
     shaObj.update( encodedBaseString )
     const signature:string = shaObj.getHash( "B64" )
@@ -56,8 +53,37 @@ export async function flickrAuthGetRequestToken(request: Request): Promise<Respo
         "&oauth_signature=" + encodeURIComponent( signature ) + 
         "&oauth_callback=" + encodeURIComponent( FGA_FLICKR_OAUTH_CALLBACK_URI )
 
+    const tokenRequestResponse:Response = await fetch( urlToRequest )
 
-    return new Response("Getting Flicker request token\n\nEncoded base string: " + encodedBaseString +
-        "\n\nSigning key: " + requestSigningKey + "\n\nSignature: " + signature + "\n\nToken request URL: " + urlToRequest)
+    const responseText:string = await tokenRequestResponse.text()
 
+    const responseTokens:string[] = responseText.split( '&' )
+
+    let responseDictionary:{ [key:string] : string } = {}
+
+    for ( const currToken of responseTokens ) {
+        const responsePair:string[] = currToken.split("=")
+
+        responseDictionary[ responsePair[0] ] = responsePair[ 1 ]
+    }
+
+    const encodedToken = encodeURIComponent( responseDictionary['oauth_token'] )
+
+    const authUrlResponse:{ [id:string]: string } = {
+        'flickr_user_auth_url': 
+            `https://www.flickr.com/services/oauth/access_token?oauth_token=${encodedToken}&perms=write` 
+    }
+
+    return new Response( JSON.stringify(authUrlResponse), 
+        { 
+            headers: new Headers( 
+                { 
+                    'Content-Type'                  : 'application/json',
+
+                    // Don't need CORS header because we're hitting a subdomain of the requesting domain 
+                    //'Access-Control-Allow-Origin'   : 'https://flickrgroupaddr.com',
+                }
+            )
+        }
+    )
 }

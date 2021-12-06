@@ -1,11 +1,11 @@
 import { Router } from 'itty-router'
-import { flickrAuthGetRequestToken } from './flickr'
+import { flickrGetUserAuthUrl } from './flickr'
 //import jsSHA from "jssha";
 
 addEventListener('fetch', (event) => {
     const router:any = Router()
 
-    router.get( '^/api/v1/auth/flickr/request_token$', flickrAuthGetRequestToken )
+    router.get( '^/api/v1/auth/flickr/user_auth_url$', flickrGetUserAuthUrl )
 
     // 404 for everything else
     router.all( '*', () => new Response( 'Not Found', { status: 404 } ) )
