@@ -80,8 +80,8 @@ export async function flickrGetUserAuthUrl(request: Request): Promise<Response> 
                 { 
                     'Content-Type'                  : 'application/json',
 
-                    // Don't need CORS header because we're hitting a subdomain of the requesting domain 
-                    //'Access-Control-Allow-Origin'   : 'https://flickrgroupaddr.com',
+                    // CORS header needed
+                    'Access-Control-Allow-Origin'   : 'https://flickrgroupaddr.com',
                 }
             )
         }
